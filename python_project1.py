@@ -1,17 +1,8 @@
-'''
-conn	Connection to the database (bank.db)
-conn.cursor()	Creates a cursor object to run SQL commands
-cursor.execute()	Runs SQL queries
-cursor.fetchone()	Gets one result from a SELECT query'''
-
-
 import sqlite3
 
-# Connect to SQLite database (or create it)
 conn = sqlite3.connect('bank.db')
-cursor = conn.cursor()   #Create a cursor object from the database connection (conn) so you can execute SQL queries like SELECT, INSERT, UPDATE, or DELETE.
+cursor = conn.cursor()   
 
-# Create accounts table if it doesn't exist
 cursor.execute('''
     CREATE TABLE IF NOT EXISTS accounts (
         acno TEXT PRIMARY KEY,
@@ -19,7 +10,7 @@ cursor.execute('''
         balance REAL
     )
 ''')
-conn.commit()     ## To save changes
+conn.commit() 
 
 
 class Bank:
@@ -32,9 +23,9 @@ class Bank:
             cursor.execute("INSERT INTO accounts (acno, name, balance) VALUES (?, ?, ?)",
                            (acno, name, balance))
             conn.commit()
-            print(f"\n✅ Account created successfully for {name} (A/C No: {acno}) with ₹{balance:.2f} balance.\n")
+            print(f"\nAccount created successfully for {name} (A/C No: {acno}) with ₹{balance:.2f} balance.\n")
         except sqlite3.IntegrityError:
-            print("❌ Account number already exists.\n")
+            print("Account number already exists.\n")
 
     def deposit(self):
         acno = input("Enter account number: ")
@@ -46,9 +37,9 @@ class Bank:
             new_balance = result[0] + amount
             cursor.execute("UPDATE accounts SET balance = ? WHERE acno = ?", (new_balance, acno))
             conn.commit()
-            print(f"✅ ₹{amount:.2f} deposited. Updated balance: ₹{new_balance:.2f}\n")
+            print(f"₹{amount:.2f} deposited. Updated balance: ₹{new_balance:.2f}\n")
         else:
-            print("❌ Account not found.\n")
+            print("Account not found.\n")
 
     def withdraw(self):
         acno = input("Enter account number: ")
@@ -59,23 +50,23 @@ class Bank:
         if result:
             balance = result[0]
             if amount > balance:
-                print("❌ Insufficient balance!\n")
+                print("Insufficient balance!\n")
             else:
                 new_balance = balance - amount
                 cursor.execute("UPDATE accounts SET balance = ? WHERE acno = ?", (new_balance, acno))
                 conn.commit()
-                print(f"✅ ₹{amount:.2f} withdrawn. Remaining balance: ₹{new_balance:.2f}\n")
+                print(f"₹{amount:.2f} withdrawn. Remaining balance: ₹{new_balance:.2f}\n")
         else:
-            print("❌ Account not found.\n")
+            print("Account not found.\n")
 
     def display(self):
         acno = input("Enter account number: ")
         cursor.execute("SELECT name, acno, balance FROM accounts WHERE acno = ?", (acno,))
         result = cursor.fetchone()
         if result:
-            print(f"📄 Account Summary\nName: {result[0]}\nAccount No: {result[1]}\nBalance: ₹{result[2]:.2f}\n")
+            print(f"Account Summary\nName: {result[0]}\nAccount No: {result[1]}\nBalance: ₹{result[2]:.2f}\n")
         else:
-            print("❌ Account not found.\n")
+            print("Account not found.\n")
 
 
 class HdfcBank(Bank):
@@ -86,12 +77,11 @@ class HdfcBank(Bank):
         if result:
             rate = 7  # 7% fixed interest
             interest = result[1] * rate / 100
-            print(f"💹 Interest for {result[0]} at {rate}% is ₹{interest:.2f}\n")
+            print(f"Interest for {result[0]} at {rate}% is ₹{interest:.2f}\n")
         else:
-            print("❌ Account not found.\n")
+            print("Account not found.\n")
 
 
-# 🔁 Menu-driven interface
 hdfc = HdfcBank()
 
 while True:
@@ -109,10 +99,9 @@ while True:
     elif choice == '5':
         hdfc.rate_of_interest()
     elif choice == '6':
-        print("👋 Exiting. Thank you for using HDFC Bank system.")
+        print("Exiting. Thank you for using HDFC Bank system.")
         break
     else:
         print("❌ Invalid option. Try again.\n")
 
-# Close DB connection
 conn.close()
