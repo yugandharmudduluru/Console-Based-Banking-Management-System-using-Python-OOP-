@@ -102,6 +102,6 @@ while True:
         print("Exiting. Thank you for using HDFC Bank system.")
         break
     else:
-        print("❌ Invalid option. Try again.\n")
+        print("Invalid option. Try again.\n")
 
 conn.close()
